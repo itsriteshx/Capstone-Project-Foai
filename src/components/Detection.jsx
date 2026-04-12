@@ -314,6 +314,24 @@ export default function Detection() {
             </AnimatePresence>
           </motion.div>
         </div>
+
+        <motion.div className="kb-cta glass-card"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: .6, delay: .3 }}>
+          <div className="kb-cta-content">
+            <div style={{ fontSize: '2.5rem' }}>📚</div>
+            <div>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '6px', fontFamily: 'var(--font-display)', fontWeight: 700 }}>Want to learn more about crop diseases?</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '.9rem' }}>
+                Explore our comprehensive agricultural expert knowledge base for detailed causes, symptoms, and treatments.
+              </p>
+            </div>
+          </div>
+          <a href="#/knowledge_page" className="kb-cta-btn">
+            Open Knowledge Base
+          </a>
+        </motion.div>
       </div>
 
       <style>{`
@@ -361,7 +379,12 @@ export default function Detection() {
         .result-item-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
         .result-cause { padding: 16px 20px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
         .result-success { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: var(--green-400); padding: 10px 0; }
+        .kb-cta { display: flex; align-items: center; justify-content: space-between; padding: 24px 32px; margin-top: 40px; border-color: rgba(16,185,129,.2); }
+        .kb-cta-content { display: flex; align-items: center; gap: 20px; }
+        .kb-cta-btn { background: var(--green-500); color: #fff; padding: 12px 24px; border-radius: var(--radius-md); font-weight: 600; font-size: .95rem; text-decoration: none; transition: all .3s; white-space: nowrap; }
+        .kb-cta-btn:hover { background: var(--green-400); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16,185,129,.3); }
         @media(max-width:900px) { .det-grid { grid-template-columns: 1fr; } }
+        @media(max-width:768px) { .kb-cta { flex-direction: column; text-align: center; gap: 20px; } .kb-cta-content { flex-direction: column; } }
         @media(max-width:480px) { .demo-grid { grid-template-columns: repeat(2,1fr); } }
       `}</style>
     </section>

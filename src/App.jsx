@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import AboutPage from './components/AboutPage'
+import AIConcepts from './components/AIConcepts'
 import Detection from './components/Detection'
 import KnowledgeBase from './components/KnowledgeBase'
 import WeatherPredictor from './components/WeatherPredictor'
@@ -11,7 +12,31 @@ import Footer from './components/Footer'
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home')
-  const [currentPage, setCurrentPage] = useState('home')
+  const [currentPage, setCurrentPage] = useState(() => {
+    if (window.location.hash.includes('/knowledge_page')) return 'knowledge';
+    if (window.location.hash.includes('/dashboard_page')) return 'dashboard';
+    if (window.location.hash.includes('/about_page')) return 'about';
+    return 'home';
+  })
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash.includes('/knowledge_page')) {
+        setCurrentPage('knowledge')
+        window.scrollTo(0, 0)
+      } else if (window.location.hash.includes('/dashboard_page')) {
+        setCurrentPage('dashboard')
+        window.scrollTo(0, 0)
+      } else if (window.location.hash.includes('/about_page')) {
+        setCurrentPage('about')
+        window.scrollTo(0, 0)
+      } else {
+        setCurrentPage('home')
+      }
+    }
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
 
   useEffect(() => {
     if (currentPage !== 'home') return;
@@ -30,19 +55,22 @@ export default function App() {
         <div className="ambient-orb orb-2" />
         <div className="ambient-orb orb-3" />
       </div>
-      <Navbar activeSection={activeSection} currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      <main>
-        {currentPage === 'home' ? (
+      <Navbar activeSection={activeSection} currentPage={currentPage} />
+      <main style={{ minHeight: '100vh', paddingTop: (currentPage !== 'home') ? '80px' : '0' }}>
+        {currentPage === 'knowledge' ? (
+          <KnowledgeBase />
+        ) : currentPage === 'dashboard' ? (
+          <Dashboard />
+        ) : currentPage === 'about' ? (
+          <AboutPage />
+        ) : (
           <>
             <Hero />
+            <AIConcepts />
             <Detection />
-            <KnowledgeBase />
             <WeatherPredictor />
-            <Dashboard />
             <Workflow />
           </>
-        ) : (
-          <AboutPage />
         )}
       </main>
       <Footer />

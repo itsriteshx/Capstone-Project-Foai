@@ -43,7 +43,7 @@ export default function Hero() {
             </p>
             <div className="hero-actions">
               <a href="#detection" className="btn btn-primary btn-lg"><FiActivity /> Start Detection</a>
-              <a href="#concepts" className="btn btn-outline btn-lg">Learn More <FiArrowRight /></a>
+              <a href="#/knowledge_page" className="btn btn-outline btn-lg">Learn More <FiArrowRight /></a>
             </div>
           </motion.div>
           <motion.div className="hero-visual" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .7, delay: .2 }}>
