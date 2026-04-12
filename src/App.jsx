@@ -16,6 +16,7 @@ export default function App() {
     if (window.location.hash.includes('/knowledge_page')) return 'knowledge';
     if (window.location.hash.includes('/dashboard_page')) return 'dashboard';
     if (window.location.hash.includes('/about_page')) return 'about';
+    if (window.location.hash.includes('/detection_page')) return 'detection';
     return 'home';
   })
 
@@ -29,6 +30,9 @@ export default function App() {
         window.scrollTo(0, 0)
       } else if (window.location.hash.includes('/about_page')) {
         setCurrentPage('about')
+        window.scrollTo(0, 0)
+      } else if (window.location.hash.includes('/detection_page')) {
+        setCurrentPage('detection')
         window.scrollTo(0, 0)
       } else {
         setCurrentPage('home')
@@ -63,11 +67,12 @@ export default function App() {
           <Dashboard />
         ) : currentPage === 'about' ? (
           <AboutPage />
+        ) : currentPage === 'detection' ? (
+          <Detection />
         ) : (
           <>
             <Hero />
             <AIConcepts />
-            <Detection />
             <WeatherPredictor />
             <Workflow />
           </>

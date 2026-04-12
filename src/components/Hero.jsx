@@ -42,7 +42,7 @@ export default function Hero() {
               Rule-Based Systems, and Probabilistic Reasoning.
             </p>
             <div className="hero-actions">
-              <a href="#detection" className="btn btn-primary btn-lg"><FiActivity /> Start Detection</a>
+              <a href="#/detection_page" className="btn btn-primary btn-lg"><FiActivity /> Start Detection</a>
               <a href="#/knowledge_page" className="btn btn-outline btn-lg">Learn More <FiArrowRight /></a>
             </div>
           </motion.div>

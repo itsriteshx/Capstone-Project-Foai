@@ -5,7 +5,6 @@ import { GiWheat } from 'react-icons/gi'
 const NAV_ITEMS = [
   { id: 'home', label: 'Home' },
   { id: 'concepts', label: 'AI Concepts' },
-  { id: 'detection', label: 'Detection' },
   { id: 'weather', label: 'Weather' },
   { id: '/dashboard_page', label: 'Dashboard' },
   { id: '/about_page', label: 'About AI' },
@@ -33,13 +32,15 @@ export default function Navbar({ activeSection, currentPage }) {
           {NAV_ITEMS.map(n => {
             const isDashboard = n.id === '/dashboard_page';
             const isAbout = n.id === '/about_page';
+            const isDetection = n.id === '/detection_page';
             
             let isActive = false;
             if (isDashboard) isActive = currentPage === 'dashboard';
             else if (isAbout) isActive = currentPage === 'about';
+            else if (isDetection) isActive = currentPage === 'detection';
             else isActive = (currentPage === 'home' && activeSection === n.id);
 
-            const href = (isDashboard || isAbout) ? `#${n.id}` : `#${n.id}`;
+            const href = `#${n.id}`;
 
             return (
               <li key={n.id}>
