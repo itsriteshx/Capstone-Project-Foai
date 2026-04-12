@@ -4,7 +4,6 @@ import { GiWheat } from 'react-icons/gi'
 
 const HOME_NAV_ITEMS = [
   { id: 'home', label: 'Home' },
-  { id: 'detection', label: 'Detection' },
   { id: 'knowledge', label: 'Knowledge' },
   { id: 'weather', label: 'Weather' },
   { id: 'dashboard', label: 'Dashboard' },

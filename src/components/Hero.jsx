@@ -70,7 +70,7 @@ export default function Hero() {
         <motion.div className="hero-stats" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6, delay: .5 }}>
           <div className="stat-card">
             <FiActivity className="stat-icon" style={{ color: 'var(--green-400)' }} />
-            <div className="stat-number"><AnimatedCounter target={100} /></div>
+            <div className="stat-number"><AnimatedCounter target={400} /></div>
             <div className="stat-label">Training Images</div>
           </div>
           <div className="stat-card">
