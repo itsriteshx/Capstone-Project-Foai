@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
 
-# Give the workflow write access to push the gh-pages branch
 permissions:
   contents: write
 
@@ -15,23 +14,17 @@ jobs:
     steps:
       - name: ⬇️ Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0   # Full history so gh-pages can detect changes
 
-      - name: 🟢 Setup Node.js 20
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: 🔨 Build project
         run: npm run build
-        env:
-          # Add any environment variables your app needs here
-          NODE_ENV: production
 
       - name: 🚀 Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -39,8 +32,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
-          # Always clean the gh-pages branch — prevents stale files from old builds
           force_orphan: true
-          # Disable Jekyll so Vite's _assets folder isn't ignored
           enable_jekyll: false
-          commit_message: "deploy: ${{ github.event.head_commit.message }}"
