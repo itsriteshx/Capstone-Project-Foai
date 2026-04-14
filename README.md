@@ -1,4 +1,4 @@
-# 🌿 CropGuard AI — Crop Disease Detector and Farm Advisor
+# 🌿 CropGuard AI — Crop Disease Detector & Farm Advisor
 
 > AI-powered no-code system for crop disease detection, treatment advisory, and outbreak prediction.
 
