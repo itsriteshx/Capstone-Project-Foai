@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import AboutPage from './components/AboutPage'
@@ -9,8 +10,16 @@ import WeatherPredictor from './components/WeatherPredictor'
 import Dashboard from './components/Dashboard'
 import Workflow from './components/Workflow'
 import Footer from './components/Footer'
+import VoiceAssistant from './components/VoiceAssistant'
 
 export default function App() {
+  const { i18n } = useTranslation()
+
+  useEffect(() => {
+    const isRTL = i18n.language === 'ur'
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr'
+    document.documentElement.lang = i18n.language
+  }, [i18n.language])
   const [activeSection, setActiveSection] = useState('home')
   const [currentPage, setCurrentPage] = useState(() => {
     if (window.location.hash.includes('/knowledge_page')) return 'knowledge';
@@ -79,6 +88,7 @@ export default function App() {
         )}
       </main>
       <Footer />
+      <VoiceAssistant />
     </>
   )
 }

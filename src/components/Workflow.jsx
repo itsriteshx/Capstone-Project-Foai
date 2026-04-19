@@ -1,94 +1,96 @@
 import { motion } from 'framer-motion'
 import { FiUploadCloud, FiCpu, FiBook, FiCloudRain, FiBarChart2, FiCheckCircle } from 'react-icons/fi'
-
-const STEPS = [
-  {
-    num: '01',
-    icon: <FiUploadCloud size={26} />,
-    title: 'Image Upload',
-    color: 'var(--green-400)',
-    bg: 'rgba(16,185,129,.1)',
-    border: 'rgba(16,185,129,.2)',
-    desc: 'Farmer uploads a leaf image via the web interface. The image is validated, resized to 224×224 px, and normalised for model input.',
-    tech: ['React File API', 'JPEG / PNG / WEBP', 'Client-side preview'],
-    milestone: 'Pre-processing',
-  },
-  {
-    num: '02',
-    icon: <FiCpu size={26} />,
-    title: 'CNN Classification',
-    color: 'var(--amber-400)',
-    bg: 'rgba(251,191,36,.1)',
-    border: 'rgba(251,191,36,.2)',
-    desc: 'MobileNetV2 (fine-tuned on PlantVillage) performs inference. The softmax layer outputs a probability distribution across 10 disease classes.',
-    tech: ['MobileNetV2', 'Transfer Learning', 'Softmax Output', 'Top-3 Confidence'],
-    milestone: 'Milestone 1 — Vision',
-  },
-  {
-    num: '03',
-    icon: <FiBook size={26} />,
-    title: 'Rule-Based Advisory',
-    color: 'var(--cyan-400)',
-    bg: 'rgba(6,182,212,.1)',
-    border: 'rgba(6,182,212,.2)',
-    desc: 'The top predicted class triggers a lookup in the expert knowledge base. IF-THEN rules map the disease to its cause, symptoms, treatment, and urgency.',
-    tech: ['Expert System', 'IF-THEN Rules', 'Symptom Lookup', 'Treatment Plan'],
-    milestone: 'Milestone 2 — Rules',
-  },
-  {
-    num: '04',
-    icon: <FiCloudRain size={26} />,
-    title: 'Weather Risk Score',
-    color: 'var(--purple-400)',
-    bg: 'rgba(168,85,247,.1)',
-    border: 'rgba(168,85,247,.2)',
-    desc: 'Current weather parameters (temperature, humidity, rainfall) are fed into a Bayesian scoring engine that calculates outbreak probability for each disease.',
-    tech: ['Bayesian Network', 'Weather Factors', 'Risk Scoring', 'Threshold Alerts'],
-    milestone: 'Milestone 3 — Probability',
-  },
-  {
-    num: '05',
-    icon: <FiBarChart2 size={26} />,
-    title: 'Analytics & Gen AI',
-    color: 'var(--lime-400)',
-    bg: 'rgba(163,230,53,.1)',
-    border: 'rgba(163,230,53,.2)',
-    desc: 'Detection data is logged to the dashboard. Recharts visualises disease trends. GPT-4o generates a natural-language farm health summary from historical context.',
-    tech: ['Recharts', 'GPT-4o Summary', 'Trend Analysis', 'CSV Export'],
-    milestone: 'Milestone 4 — Gen AI',
-  },
-  {
-    num: '06',
-    icon: <FiCheckCircle size={26} />,
-    title: 'Farmer Advisory Output',
-    color: 'var(--green-400)',
-    bg: 'rgba(16,185,129,.1)',
-    border: 'rgba(16,185,129,.2)',
-    desc: 'A concise, farmer-friendly report is displayed: disease name, confidence, severity, root cause, step-by-step treatment, and weather-adjusted risk level.',
-    tech: ['Clarity-first UX', 'Local Language Ready', 'Print / Share', 'History Log'],
-    milestone: 'Output',
-  },
-]
-
-const ETHICAL_POINTS = [
-  { icon: '🔒', title: 'Data Privacy', desc: 'No images are stored on servers. All processing happens client-side or is discarded after inference.' },
-  { icon: '⚖️', title: 'Fairness',     desc: 'Training data includes crop varieties from South Asia, Africa, and South America to reduce regional bias.' },
-  { icon: '👁️', title: 'Transparency', desc: 'Confidence scores are always displayed. The system never hides uncertainty or fabricates diagnoses.' },
-  { icon: '🤝', title: 'Human-in-Loop', desc: 'AI recommendations are advisory only. Farmers are encouraged to verify with local agronomists for high-severity cases.' },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function Workflow() {
+  const { t } = useTranslation()
+
+  const STEPS = [
+    {
+      num: '01',
+      icon: <FiUploadCloud size={26} />,
+      titleKey: 'workflow.s1.title',
+      color: 'var(--green-400)',
+      bg: 'rgba(16,185,129,.1)',
+      border: 'rgba(16,185,129,.2)',
+      descKey: 'workflow.s1.desc',
+      tech: ['React File API', 'JPEG / PNG / WEBP', 'Client-side preview'],
+      milestone: 'Pre-processing',
+    },
+    {
+      num: '02',
+      icon: <FiCpu size={26} />,
+      titleKey: 'workflow.s2.title',
+      color: 'var(--amber-400)',
+      bg: 'rgba(251,191,36,.1)',
+      border: 'rgba(251,191,36,.2)',
+      descKey: 'workflow.s2.desc',
+      tech: ['MobileNetV2', 'Transfer Learning', 'Softmax Output', 'Top-3 Confidence'],
+      milestone: 'Milestone 1 — Vision',
+    },
+    {
+      num: '03',
+      icon: <FiBook size={26} />,
+      titleKey: 'workflow.s3.title',
+      color: 'var(--cyan-400)',
+      bg: 'rgba(6,182,212,.1)',
+      border: 'rgba(6,182,212,.2)',
+      descKey: 'workflow.s3.desc',
+      tech: ['Expert System', 'IF-THEN Rules', 'Symptom Lookup', 'Treatment Plan'],
+      milestone: 'Milestone 2 — Rules',
+    },
+    {
+      num: '04',
+      icon: <FiCloudRain size={26} />,
+      titleKey: 'workflow.s4.title',
+      color: 'var(--purple-400)',
+      bg: 'rgba(168,85,247,.1)',
+      border: 'rgba(168,85,247,.2)',
+      descKey: 'workflow.s4.desc',
+      tech: ['Bayesian Network', 'Weather Factors', 'Risk Scoring', 'Threshold Alerts'],
+      milestone: 'Milestone 3 — Probability',
+    },
+    {
+      num: '05',
+      icon: <FiBarChart2 size={26} />,
+      titleKey: 'workflow.s5.title',
+      color: 'var(--lime-400)',
+      bg: 'rgba(163,230,53,.1)',
+      border: 'rgba(163,230,53,.2)',
+      descKey: 'workflow.s5.desc',
+      tech: ['Recharts', 'GPT-4o Summary', 'Trend Analysis', 'CSV Export'],
+      milestone: 'Milestone 4 — Gen AI',
+    },
+    {
+      num: '06',
+      icon: <FiCheckCircle size={26} />,
+      titleKey: 'workflow.s6.title',
+      color: 'var(--green-400)',
+      bg: 'rgba(16,185,129,.1)',
+      border: 'rgba(16,185,129,.2)',
+      descKey: 'workflow.s6.desc',
+      tech: ['Clarity-first UX', 'Local Language Ready', 'Print / Share', 'History Log'],
+      milestone: 'Output',
+    },
+  ]
+
+  const ETHICAL_POINTS = [
+    { icon: '🔒', titleKey: 'workflow.e1.title', descKey: 'workflow.e1.desc' },
+    { icon: '⚖️', titleKey: 'workflow.e2.title', descKey: 'workflow.e2.desc' },
+    { icon: '👁️', titleKey: 'workflow.e3.title', descKey: 'workflow.e3.desc' },
+    { icon: '🤝', titleKey: 'workflow.e4.title', descKey: 'workflow.e4.desc' },
+  ]
+
   return (
     <section id="workflow" className="section-pad">
       <div className="container">
         <motion.div className="section-header"
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: .6 }}>
-          <span className="section-tag">⚙️ System Architecture</span>
-          <h2 className="section-title">End-to-End AI Workflow</h2>
+          <span className="section-tag">⚙️ {t('nav.workflow')}</span>
+          <h2 className="section-title">{t('workflow.title')}</h2>
           <p className="section-desc">
-            Six interconnected stages transform a raw leaf photo into a complete,
-            actionable farm advisory — powered by four AI paradigms.
+            {t('workflow.subtitle')}
           </p>
         </motion.div>
 
@@ -111,13 +113,13 @@ export default function Workflow() {
 
                 <div className="wf-step-body">
                   <div className="wf-step-top">
-                    <h3 className="wf-title">{s.title}</h3>
+                    <h3 className="wf-title">{t(s.titleKey)}</h3>
                     <span className="wf-milestone" style={{ color: s.color, background: s.bg, border: `1px solid ${s.border}` }}>{s.milestone}</span>
                   </div>
-                  <p className="wf-desc">{s.desc}</p>
+                  <p className="wf-desc">{t(s.descKey)}</p>
                   <div className="wf-tech-row">
-                    {s.tech.map(t => (
-                      <span key={t} className="wf-tech-pill" style={{ color: s.color, background: s.bg, border: `1px solid ${s.border}` }}>{t}</span>
+                    {s.tech.map(techItem => (
+                      <span key={techItem} className="wf-tech-pill" style={{ color: s.color, background: s.bg, border: `1px solid ${s.border}` }}>{techItem}</span>
                     ))}
                   </div>
                 </div>
@@ -130,7 +132,7 @@ export default function Workflow() {
         <motion.div className="wf-flow glass-card"
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: .6 }}>
-          <h3 className="wf-flow-title">📐 Data Flow Summary</h3>
+          <h3 className="wf-flow-title">📐 {t('workflow.dataFlow')}</h3>
           <div className="wf-flow-blocks">
             {[
               { label: 'Input', icon: '🖼️', sub: 'Leaf image\n224×224 px', color: 'var(--green-400)' },
@@ -155,13 +157,13 @@ export default function Workflow() {
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: .6, delay: .1 }}>
-          <h3 className="wf-ethics-title">🌍 Ethical AI Considerations</h3>
+          <h3 className="wf-ethics-title">🌍 {t('workflow.ethics')}</h3>
           <div className="wf-ethics-grid">
             {ETHICAL_POINTS.map(e => (
-              <div key={e.title} className="wf-ethics-card glass-card">
+              <div key={e.titleKey} className="wf-ethics-card glass-card">
                 <div className="wf-ethics-icon">{e.icon}</div>
-                <h4 className="wf-ethics-name">{e.title}</h4>
-                <p className="wf-ethics-desc">{e.desc}</p>
+                <h4 className="wf-ethics-name">{t(e.titleKey)}</h4>
+                <p className="wf-ethics-desc">{t(e.descKey)}</p>
               </div>
             ))}
           </div>

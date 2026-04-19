@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react'
 import { FiMenu, FiX } from 'react-icons/fi'
 import { GiWheat } from 'react-icons/gi'
+import LanguageSwitcher from './LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
 
 const NAV_ITEMS = [
-  { id: 'home', label: 'Home' },
-  { id: 'concepts', label: 'AI Concepts' },
-  { id: 'weather', label: 'Weather' },
-  { id: '/dashboard_page', label: 'Dashboard' },
-  { id: '/about_page', label: 'About AI' },
-  { id: 'workflow', label: 'Workflow' },
+  { id: 'home', labelKey: 'nav.home' },
+  { id: 'concepts', labelKey: 'nav.aiConcepts' },
+  { id: 'weather', labelKey: 'nav.weather' },
+  { id: '/dashboard_page', labelKey: 'nav.dashboard' },
+  { id: '/about_page', labelKey: 'nav.aboutAI' },
+  { id: 'workflow', labelKey: 'nav.workflow' },
 ]
 
 export default function Navbar({ activeSection, currentPage }) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40)
@@ -45,11 +48,14 @@ export default function Navbar({ activeSection, currentPage }) {
             return (
               <li key={n.id}>
                 <a href={href} className={isActive ? 'active' : ''} onClick={() => setMenuOpen(false)}>
-                  {n.label}
+                  {t(n.labelKey)}
                 </a>
               </li>
             );
           })}
+          <li style={{ display: 'flex', alignItems: 'center', marginLeft: '8px' }}>
+            <LanguageSwitcher />
+          </li>
         </ul>
         <button className="nav-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
           {menuOpen ? <FiX size={22} color="var(--text-primary)" /> : <><span /><span /><span /></>}

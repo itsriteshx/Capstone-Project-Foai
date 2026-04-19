@@ -1,39 +1,38 @@
 import { GiWheat } from 'react-icons/gi'
-import { FiGithub, FiExternalLink, FiMail } from 'react-icons/fi'
-
-const NAV_GROUPS = [
-  {
-    title: 'Sections',
-    links: [
-      { label: 'Home',        href: '#home' },
-      { label: 'AI Concepts', href: '#concepts' },
-      { label: 'Detection',   href: '#detection' },
-      { label: 'Knowledge Base', href: '#knowledge' },
-    ],
-  },
-  {
-    title: 'More',
-    links: [
-      { label: 'Weather Risk',  href: '#weather' },
-      { label: 'Dashboard',     href: '#dashboard' },
-      { label: 'Workflow',      href: '#workflow' },
-    ],
-  },
-  {
-    title: 'Resources',
-    links: [
-      { label: 'PlantVillage Dataset', href: 'https://plantvillage.psu.edu/', external: true },
-      { label: 'MobileNetV2 Paper',    href: 'https://arxiv.org/abs/1801.04381', external: true },
-      { label: 'Recharts Docs',        href: 'https://recharts.org/', external: true },
-    ],
-  },
-]
-
-const TEAM = [
-  { name: 'CropGuard AI', role: 'College Project', color: 'var(--green-400)' },
-]
+import { FiGithub, FiMail, FiExternalLink } from 'react-icons/fi'
+import { useTranslation } from 'react-i18next'
 
 export default function Footer() {
+  const { t } = useTranslation()
+
+  const NAV_GROUPS = [
+    {
+      title: t('footer.sections'),
+      links: [
+        { label: t('nav.home'),        href: '#home' },
+        { label: t('nav.aiConcepts'), href: '#concepts' },
+        { label: t('nav.dashboard'),   href: '#dashboard' },
+        { label: t('nav.workflow'), href: '#workflow' },
+      ],
+    },
+    {
+      title: t('footer.more'),
+      links: [
+        { label: t('nav.weather'),  href: '#weather' },
+        { label: t('nav.dashboard'),     href: '#dashboard' },
+        { label: t('nav.workflow'),      href: '#workflow' },
+      ],
+    },
+    {
+      title: t('footer.resources'),
+      links: [
+        { label: 'PlantVillage Dataset', href: 'https://plantvillage.psu.edu/', external: true },
+        { label: 'MobileNetV2 Paper',    href: 'https://arxiv.org/abs/1801.04381', external: true },
+        { label: 'Recharts Docs',        href: 'https://recharts.org/', external: true },
+      ],
+    },
+  ]
+
   return (
     <footer className="footer">
       <div className="container">
@@ -44,9 +43,7 @@ export default function Footer() {
               <span>CropGuard <span className="nav-brand-ai">AI</span></span>
             </a>
             <p className="footer-tagline">
-              An AI-powered crop disease detection and farm advisory system built
-              as a college project to demonstrate four AI paradigms — Computer Vision,
-              Rule-Based Systems, Probabilistic Reasoning, and Generative AI.
+              {t('footer.description')}
             </p>
             <div className="footer-badges">
               <span className="tag tag-green">🎓 College Project</span>
@@ -82,15 +79,15 @@ export default function Footer() {
 
         {/* Tech stack strip */}
         <div className="footer-tech-strip">
-          <span style={{ fontSize: '.72rem', color: 'var(--text-muted)', marginRight: 16 }}>BUILT WITH</span>
-          {['React 19', 'Vite', 'Framer Motion', 'Recharts', 'MobileNetV2', 'PlantVillage'].map(t => (
-            <span key={t} className="footer-tech-tag">{t}</span>
+          <span style={{ fontSize: '.72rem', color: 'var(--text-muted)', marginRight: 16 }}>{t('footer.builtWith')}</span>
+          {['React 19', 'Vite', 'Framer Motion', 'Recharts', 'MobileNetV2', 'PlantVillage'].map(techItem => (
+            <span key={techItem} className="footer-tech-tag">{techItem}</span>
           ))}
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026 CropGuard AI — College Final Year Project</span>
-          <span>Built with ❤️ for farmers using React + Framer Motion + Recharts</span>
+          <span>{t('footer.copyright')}</span>
+          <span>{t('footer.tagline')}</span>
         </div>
       </div>
 

@@ -1,0 +1,180 @@
+{
+  "translation": {
+    "nav": {
+      "home": "Home",
+      "aiConcepts": "AI Concepts",
+      "weather": "Weather",
+      "dashboard": "Dashboard",
+      "aboutAI": "About AI",
+      "workflow": "Workflow"
+    },
+    "hero": {
+      "badge": "AI-Powered Agricultural Technology",
+      "title1": "Detect Crop",
+      "title2": "Diseases",
+      "title3": "Instantly with AI",
+      "description": "Upload a leaf image and get instant disease diagnosis, severity assessment, treatment recommendations, and prevention tips — powered by Computer Vision, Rule-Based Systems, and Probabilistic Reasoning.",
+      "startBtn": "Start Detection",
+      "learnMore": "Learn More"
+    },
+    "features": {
+      "diseases": "10 Diseases",
+      "diseasesDesc": "Classified by AI model",
+      "aiConcepts": "4 AI Concepts",
+      "aiConceptsDesc": "Vision, Rules, Probability, Gen AI",
+      "weatherRisk": "Weather Risk",
+      "weatherRiskDesc": "Probabilistic outbreak prediction",
+      "smartAdvisory": "Smart Advisory",
+      "smartAdvisoryDesc": "Farmer-friendly treatment plan"
+    },
+    "stats": {
+      "active_farmers": "Active Farmers",
+      "stat_accuracy": "Diagnosis Accuracy",
+      "stat_scans": "Leaves Scanned"
+    },
+    "aiConcepts": {
+      "title": "Four Pillars of CropGuard AI",
+      "subtitle": "CropGuard combines four distinct AI techniques to deliver a complete farm intelligence pipeline — from image capture to actionable advice.",
+      "m1": {
+        "title": "Computer Vision",
+        "subtitle": "Image Classification",
+        "desc": "A CNN model (MobileNetV2 fine-tuned) classifies leaf images into disease categories with real-time inference.",
+        "p1": "Real-time edge inference via TensorFlow.js",
+        "p2": "Trained on 50,000+ PlantVillage samples",
+        "p3": "92%+ Validation accuracy",
+        "p4": "Dynamic feature map extraction"
+      },
+      "m2": {
+        "title": "Rule-Based System",
+        "subtitle": "Knowledge Mapping",
+        "desc": "Our IF-THEN rule engine encodes agricultural expert knowledge for each disease — covering causes, symptoms, and treatments.",
+        "p1": "Expert-vetted diagnostic protocols",
+        "p2": "Logical dependency mapping",
+        "p3": "Instant treatment generation",
+        "p4": "Localized pathology logic"
+      },
+      "m3": {
+        "title": "Probabilistic Reasoning",
+        "subtitle": "Weather Risk Prediction",
+        "desc": "Bayesian networks calculate outbreak probability based on environmental factors like humidity and temperature.",
+        "p1": "Dynamic Bayesian scoring",
+        "p2": "Weather factor weighting",
+        "p3": "Threshold-based alerts",
+        "p4": "Real-time risk recalibration"
+      },
+      "m4": {
+        "title": "Generative AI",
+        "subtitle": "Analytics Dashboard",
+        "desc": "GPT-4o summarizes detection history and trends into natural language reports for better farm management.",
+        "p1": "Natural language summary generation",
+        "p2": "Historical trend analysis",
+        "p3": "Actionable insight synthesis",
+        "p4": "Visual data interpretation"
+      },
+      "pipeline": {
+        "step1": "Image Upload",
+        "step2": "CNN Detection",
+        "step3": "Rule Lookup",
+        "step4": "Weather Risk",
+        "step5": "Dashboard"
+      }
+    },
+    "weather": {
+      "title": "Weather Risk Assessment",
+      "subtitle": "Probabilistic outbreak prediction based on environmental parameters.",
+      "presets": "QUICK PRESETS",
+      "p1": "Monsoon",
+      "p2": "Dry Summer",
+      "p3": "Spring",
+      "p4": "Winter",
+      "params": "Weather Parameters",
+      "temp": "Temperature",
+      "humidity": "Humidity",
+      "rainfall": "Rainfall",
+      "outbreakRisk": "Outbreak Risk",
+      "highRisk": "High Risk",
+      "basedOn": "Based on environmental factors",
+      "riskRadar": "Disease Risk Radar",
+      "bayesian": "Bayesian Probabilistic Model",
+      "d1": "Early Blight",
+      "d2": "Late Blight",
+      "d3": "Powdery Mildew",
+      "d4": "Bacterial Spot",
+      "d5": "Viral Diseases",
+      "r1": "High",
+      "r2": "Critical",
+      "r3": "Moderate",
+      "r4": "Low",
+      "msg1": "Monitor conditions closely — act within 48h",
+      "msg2": "Immediate preventive action recommended!"
+    },
+    "workflow": {
+      "title": "How It Works",
+      "subtitle": "Six interconnected stages transform a raw leaf photo into a complete, actionable farm advisory — powered by four AI paradigms.",
+      "s1": {
+        "title": "01 Image Upload",
+        "desc": "Farmer uploads a leaf image via the web interface. The image is validated, resized to 224×224 px, and normalised for model input."
+      },
+      "s2": {
+        "title": "02 CNN Classification",
+        "desc": "MobileNetV2 (fine-tuned on PlantVillage) performs inference. The softmax layer outputs a probability distribution across 10 disease classes."
+      },
+      "s3": {
+        "title": "03 Rule-Based Advisory",
+        "desc": "The top predicted class triggers a lookup in the expert knowledge base. IF-THEN rules map the disease to its cause, symptoms, treatment, and urgency."
+      },
+      "s4": {
+        "title": "04 Weather Risk Score",
+        "desc": "Current weather parameters (temperature, humidity, rainfall) are fed into a Bayesian scoring engine that calculates outbreak probability for each disease."
+      },
+      "s5": {
+        "title": "05 Analytics & Gen AI",
+        "desc": "Detection data is logged to the dashboard. Recharts visualises disease trends. GPT-4o generates a natural-language farm health summary."
+      },
+      "s6": {
+        "title": "06 Farmer Advisory Output",
+        "desc": "A concise, farmer-friendly report is displayed: disease name, confidence, severity, root cause, step-by-step treatment, and weather-adjusted risk level."
+      },
+      "dataFlow": "Data Flow Summary",
+      "ethics": "Ethical AI Considerations",
+      "e1": {
+        "title": "Data Privacy",
+        "desc": "No images are stored on servers. All processing happens client-side or is discarded after inference."
+      },
+      "e2": {
+        "title": "Fairness",
+        "desc": "Training data includes crop varieties from South Asia, Africa, and South America to reduce regional bias."
+      },
+      "e3": {
+        "title": "Transparency",
+        "desc": "Confidence scores are always displayed. The system never hides uncertainty or fabricates diagnoses."
+      },
+      "e4": {
+        "title": "Human-in-Loop",
+        "desc": "AI recommendations are advisory only. Farmers are encouraged to verify with local agronomists."
+      }
+    },
+    "footer": {
+      "description": "An AI-powered crop disease detection & farm advisory system leveraging Computer Vision, Rule-Based Systems, and Probabilistic Reasoning.",
+      "sections": "Sections",
+      "more": "More",
+      "resources": "Resources",
+      "builtWith": "BUILT WITH",
+      "copyright": "© 2026 CropGuard AI — College Final Year Project",
+      "tagline": "Built with ❤️ for farmers using React + Framer Motion + Recharts"
+    },
+    "voiceAssistant": {
+      "suggestions": [
+        "How to treat early blight?",
+        "Is there a risk of disease today?",
+        "Signs of bacterial spot?",
+        "How to prevent crop diseases?"
+      ],
+      "state_listening": "Listening...",
+      "state_thinking": "Thinking...",
+      "state_speaking": "Speaking...",
+      "state_idle": "Assistant Ready",
+      "placeholder": "Speak to CropGuard..."
+    }
+  }
+}

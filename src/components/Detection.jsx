@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FiUploadCloud, FiAlertCircle, FiCheckCircle, FiClock, FiZap } from 'react-icons/fi'
+import { FiUploadCloud, FiAlertCircle, FiCheckCircle, FiClock, FiZap, FiTarget } from 'react-icons/fi'
 import { DISEASE_DATABASE } from '../data/diseaseData'
 import * as tmImage from '@teachablemachine/image'
+import { useTranslation } from 'react-i18next'
 
 const DEMO_IMAGES = [
   { label: 'Early Blight', key: 'early_blight', emoji: '🍂', hint: 'Tomato leaf — brown spots' },
@@ -40,6 +41,10 @@ export default function Detection() {
 
   const [model, setModel] = useState(null)
   const [modelLoading, setModelLoading] = useState(true)
+  const { t } = useTranslation()
+
+  // Severity Assessment State
+  const [spotCount, setSpotCount] = useState(0)
 
   // Load Model Effect
   useEffect(() => {
@@ -129,6 +134,15 @@ export default function Detection() {
     runAnalysis(key)
   }
 
+  const getSeverityLevel = (spots) => {
+    if (spots === 0) return { label: 'NONE', color: 'var(--green-400)', width: 0 }
+    if (spots <= 5) return { label: 'LOW', color: 'var(--cyan-400)', width: 33 }
+    if (spots <= 10) return { label: 'MEDIUM', color: 'var(--amber-400)', width: 66 }
+    return { label: 'HIGH', color: 'var(--red-400)', width: 100 }
+  }
+
+  const sevData = getSeverityLevel(spotCount)
+
   return (
     <section id="detection" className="section-pad">
       <div className="container">
@@ -138,10 +152,9 @@ export default function Detection() {
           <span className="section-tag" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             🔬 Disease Detection {model && !modelLoading && <span style={{ color:'var(--green-400)', fontSize:'.75rem' }}>(TF.js Engine Online)</span>}
           </span>
-          <h2 className="section-title">AI-Powered Crop Analysis</h2>
+          <h2 className="section-title">{t('detection.pageTitle', 'Crop Disease Detection')}</h2>
           <p className="section-desc">
-            Upload a leaf image or pick a demo sample. Our CNN model returns a
-            diagnosis with confidence score, severity, and a full treatment plan.
+            {t('hero.description', 'Upload a leaf image or pick a demo sample. Our CNN model returns a diagnosis with confidence score, severity, and a full treatment plan.')}
           </p>
         </motion.div>
 
@@ -179,14 +192,14 @@ export default function Detection() {
               ) : (
                 <>
                   <FiUploadCloud size={44} style={{ color: 'var(--green-400)', marginBottom: 16 }} />
-                  <p className="upload-title">{modelLoading ? 'Initializing Local AI Engine...' : 'Drag & Drop or Click to Upload'}</p>
-                  <p className="upload-hint">JPG, PNG, WEBP — max 10 MB</p>
+                  <p className="upload-title">{modelLoading ? t('common.loading', 'Initializing...') : t('detection.uploadTitle', 'Upload Leaf Image')}</p>
+                  <p className="upload-hint">{t('detection.uploadDesc', 'Take a photo or upload from gallery')}</p>
                 </>
               )}
             </div>
 
             {/* Demo quick pickers */}
-            <p className="demo-label">⚡ Quick Demo Samples</p>
+            <p className="demo-label">{t('common.next', '⚡ Quick Demo Samples')}</p>
             <div className="demo-grid">
               {DEMO_IMAGES.map(d => (
                 <button key={d.key} className="demo-pill" onClick={() => handleDemoClick(d.key, d.emoji)} title={d.hint} disabled={modelLoading}>
@@ -197,7 +210,7 @@ export default function Detection() {
 
             {/* How it works mini box */}
             <div className="how-box glass-card">
-              <p className="how-title"><FiZap style={{ color: 'var(--green-400)' }} /> How Detection Works</p>
+              <p className="how-title"><FiZap style={{ color: 'var(--green-400)' }} /> {t('workflow.pageTitle', 'How It Works')}</p>
               {[
                 ['1.', 'Image preprocessed to 224×224 px in-browser'],
                 ['2.', 'Teachable Machine CNN extracts features'],
@@ -312,6 +325,46 @@ export default function Detection() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Severity Assessment Panel */}
+            <motion.div className="severity-panel glass-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                <FiTarget style={{ color: 'var(--cyan-400)' }} size={18} />
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-display)' }}>{t('severity_assessment', 'Disease Severity Assessment')}</h3>
+              </div>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: 20 }}>
+                Manually input the observed number of disease spots on a typical affected leaf to calculate severity.
+              </p>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 200 }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>{t('spot_count', 'Spot Count:')}</span>
+                  <input type="number" min="0" max="100" value={spotCount} onChange={e => setSpotCount(Math.max(0, parseInt(e.target.value) || 0))} 
+                    style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: 'var(--radius-sm)', padding: '8px 12px', width: '80px', fontSize: '1rem', fontWeight: 700, outline: 'none' }} />
+                </div>
+                
+                <div style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', background: `rgba(${sevData.color === 'var(--red-400)' ? '239,68,68' : sevData.color === 'var(--amber-400)' ? '245,158,11' : sevData.color === 'var(--cyan-400)' ? '6,182,212' : '16,185,129'}, 0.1)`, border: `1px solid ${sevData.color}44`, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>{t('detection.severity', 'SEVERITY')}:</span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: sevData.color, letterSpacing: '0.05em' }}>{sevData.label}</span>
+                </div>
+              </div>
+
+              <div style={{ height: '12px', background: 'var(--bg-tertiary)', borderRadius: '6px', overflow: 'hidden', position: 'relative' }}>
+                {/* Guidelines */}
+                <div style={{ position: 'absolute', left: '33%', top: 0, bottom: 0, width: '1px', background: 'rgba(255,255,255,0.1)', zIndex: 1 }} />
+                <div style={{ position: 'absolute', left: '66%', top: 0, bottom: 0, width: '1px', background: 'rgba(255,255,255,0.1)', zIndex: 1 }} />
+                
+                <motion.div initial={{ width: 0 }} animate={{ width: `${sevData.width}%` }} transition={{ duration: 0.4 }} 
+                  style={{ height: '100%', background: sevData.color, borderRadius: '6px' }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 8, fontWeight: 600 }}>
+                <span>0</span>
+                <span>1-5 (Low)</span>
+                <span>6-10 (Medium)</span>
+                <span>10+ (High)</span>
+              </div>
+            </motion.div>
+
           </motion.div>
         </div>
 
@@ -322,14 +375,14 @@ export default function Detection() {
           <div className="kb-cta-content">
             <div style={{ fontSize: '2.5rem' }}>📚</div>
             <div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '6px', fontFamily: 'var(--font-display)', fontWeight: 700 }}>Want to learn more about crop diseases?</h3>
+              <h3 style={{ fontSize: '1.2rem', marginBottom: '6px', fontFamily: 'var(--font-display)', fontWeight: 700 }}>{t('features.diseases', '10 Diseases')} - {t('nav.aboutAI', 'About AI')}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '.9rem' }}>
-                Explore our comprehensive agricultural expert knowledge base for detailed causes, symptoms, and treatments.
+                {t('features.diseasesDesc', 'Classified by AI model')}
               </p>
             </div>
           </div>
           <a href="#/knowledge_page" className="kb-cta-btn">
-            Open Knowledge Base
+            {t('open_knowledge_base', 'Open Knowledge Base')}
           </a>
         </motion.div>
       </div>
@@ -379,6 +432,7 @@ export default function Detection() {
         .result-item-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
         .result-cause { padding: 16px 20px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
         .result-success { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: var(--green-400); padding: 10px 0; }
+        .severity-panel { padding: 24px; border-top: 4px solid rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.2); }
         .kb-cta { display: flex; align-items: center; justify-content: space-between; padding: 24px 32px; margin-top: 40px; border-color: rgba(16,185,129,.2); }
         .kb-cta-content { display: flex; align-items: center; gap: 20px; }
         .kb-cta-btn { background: var(--green-500); color: #fff; padding: 12px 24px; border-radius: var(--radius-md); font-weight: 600; font-size: .95rem; text-decoration: none; transition: all .3s; white-space: nowrap; }

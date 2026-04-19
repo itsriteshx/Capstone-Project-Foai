@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import AIConcepts from './AIConcepts'
 
 const fadeUp = (delay = 0) => ({
@@ -9,13 +10,14 @@ const fadeUp = (delay = 0) => ({
 })
 
 export default function AboutPage() {
+  const { t } = useTranslation()
   return (
     <div className="about-page" style={{ paddingTop: '80px' }}>
       <section className="section-pad">
         <div className="container">
           <motion.div className="section-header" {...fadeUp()}>
-            <span className="section-tag">🌟 About The Project</span>
-            <h2 className="section-title">Empowering Farmers with AI</h2>
+            <span className="section-tag">📖 {t('about.pageTitle', 'About Our Technology')}</span>
+            <h2 className="section-title">Cultivating the Future of Farming</h2>
             <p className="section-desc">
               CropGuard AI was built to address a critical challenge in modern agriculture: the rapid and devastating spread of crop diseases driven by shifting climate patterns.
             </p>

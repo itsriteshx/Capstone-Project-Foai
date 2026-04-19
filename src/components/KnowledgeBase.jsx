@@ -1,18 +1,22 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { FiSearch, FiChevronDown, FiChevronUp, FiFilter } from 'react-icons/fi'
 import { DISEASE_DATABASE } from '../data/diseaseData'
+import DiagnosisRules from './DiagnosisRules'
+import ModelEvaluation from './ModelEvaluation'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 const SEVERITY_COLOR = { none: 'tag-green', low: 'tag-cyan', medium: 'tag-amber', high: 'tag-red' }
-const TYPE_COLOR = { Fungal: 'tag-amber', Bacterial: 'tag-cyan', None: 'tag-green' }
+const TYPE_COLOR = { Fungal: 'tag-amber', Bacterial: 'tag-cyan', Viral: 'tag-pink', None: 'tag-green' }
 
 export default function KnowledgeBase() {
   const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('All')
-  const [expanded, setExpanded] = useState(null)
+  const [filterType, setFilterType] = useState('All')
+  const [expandedRow, setExpandedRow] = useState(null)
+  const { t } = useTranslation()
 
   const diseases = Object.entries(DISEASE_DATABASE)
-  const types = ['All', 'Fungal', 'Bacterial', 'None']
+  const types = ['All', 'Fungal', 'Bacterial', 'Viral', 'None']
 
   const filtered = diseases.filter(([, d]) => {
     const matchSearch = search === '' || d.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -27,11 +31,10 @@ export default function KnowledgeBase() {
         <motion.div className="section-header"
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: .6 }}>
-          <span className="section-tag">📚 Rule-Based System</span>
-          <h2 className="section-title">Expert Knowledge Base</h2>
+          <span className="section-tag">{t('about.rulesBased', '📚 Rule-Based System')}</span>
+          <h2 className="section-title" style={{ marginBottom: 4 }}>{t('nav.aiConcepts', 'Expert Knowledge Base')}</h2>
           <p className="section-desc">
-            Our IF-THEN rule engine encodes agricultural expert knowledge for each
-            disease — covering causes, symptoms, treatments, and prevention protocols.
+            {t('workflow.pageTitle', 'Our IF-THEN rule engine encodes agricultural expert knowledge for each disease — covering causes, symptoms, treatments, and prevention protocols.')}
           </p>
         </motion.div>
 
@@ -41,7 +44,7 @@ export default function KnowledgeBase() {
           viewport={{ once: true }} transition={{ duration: .5, delay: .1 }}>
           <div className="kb-search-wrap">
             <FiSearch style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-            <input className="kb-search" placeholder="Search disease or crop…" value={search}
+            <input className="kb-search" placeholder={t('search_disease', 'Search disease or crop…')} value={search}
               onChange={e => setSearch(e.target.value)} />
           </div>
           <div className="kb-filter-row">
@@ -58,7 +61,7 @@ export default function KnowledgeBase() {
           {filtered.map(([key, d], i) => (
             <motion.div key={key}
               initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: .5, delay: i * .07 }}>
+              viewport={{ once: true }} transition={{ duration: .5, delay: (i % 10) * .07 }}>
               <div className={`kb-card glass-card${expanded === key ? ' expanded' : ''}`}
                 style={{ borderColor: expanded === key ? d.color + '44' : undefined }}>
                 <div className="kb-card-head" onClick={() => setExpanded(expanded === key ? null : key)}>
@@ -66,9 +69,9 @@ export default function KnowledgeBase() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div className="kb-row-top">
                       <h3 className="kb-name">{d.name}</h3>
-                      <span className={`tag ${TYPE_COLOR[d.type]}`}>{d.type}</span>
+                      <span className={`tag ${TYPE_COLOR[d.type] || 'tag-cyan'}`}>{d.type}</span>
                       <span className={`tag ${SEVERITY_COLOR[d.severity]}`} style={{ textTransform: 'capitalize' }}>
-                        {d.severity === 'none' ? 'Safe' : d.severity}
+                         {d.severity === 'none' ? 'Safe' : d.severity}
                       </span>
                     </div>
                     <p className="kb-crop">Affects: {d.crop}</p>
@@ -130,6 +133,11 @@ export default function KnowledgeBase() {
             <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--text-muted)' }}>No diseases match your search.</div>
           )}
         </div>
+
+        {/* Milestone 2: Logical Rules & Model Evaluation */}
+        <DiagnosisRules />
+        <ModelEvaluation />
+
       </div>
 
       <style>{`

@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { FiDownload, FiTrendingUp, FiAlertCircle } from 'react-icons/fi'
+import { FiDownload, FiTrendingUp, FiAlertCircle, FiChevronUp, FiChevronDown } from 'react-icons/fi'
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, Sector,
 } from 'recharts'
 import { SAMPLE_RECORDS, MONTHLY_CHART_DATA, DISEASE_DISTRIBUTION } from '../data/diseaseData'
+import AdvisoryPanel from './AdvisoryPanel'
+import { useTranslation } from 'react-i18next'
 
 const STATUS_TAG = {
   Healthy: 'tag-green', Recovered: 'tag-green',
@@ -14,10 +16,10 @@ const STATUS_TAG = {
 }
 
 const STATS = [
-  { label: 'Total Scans', value: '247', icon: '🔬', color: 'var(--green-400)' },
-  { label: 'Diseases Caught', value: '144', icon: '⚠️', color: 'var(--amber-400)' },
-  { label: 'Healthy Crops', value: '103', icon: '✅', color: 'var(--cyan-400)' },
-  { label: 'Farmers Helped', value: '89', icon: '👨‍🌾', color: 'var(--purple-400)' },
+  { label: 'Total Scans', key: 'dash_total', value: '247', icon: '🔬', color: 'var(--green-400)' },
+  { label: 'Diseases Caught', key: 'dash_caught', value: '144', icon: '⚠️', color: 'var(--amber-400)' },
+  { label: 'Healthy Crops', key: 'dash_healthy', value: '103', icon: '✅', color: 'var(--cyan-400)' },
+  { label: 'Farmers Helped', key: 'dash_helped', value: '89', icon: '👨‍🌾', color: 'var(--purple-400)' },
 ]
 
 function ActiveShape({ cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload }) {
@@ -36,12 +38,47 @@ const AI_SUMMARY = `Based on the last 6 months of scan data, our AI analysis rev
 export default function Dashboard() {
   const [activePie, setActivePie] = useState(0)
   const [searchRec, setSearchRec] = useState('')
+  const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' })
+  const { t } = useTranslation()
 
-  const filteredRecords = SAMPLE_RECORDS.filter(r =>
-    r.farmer.toLowerCase().includes(searchRec.toLowerCase()) ||
-    r.disease.toLowerCase().includes(searchRec.toLowerCase()) ||
-    r.crop.toLowerCase().includes(searchRec.toLowerCase())
-  )
+  const filteredRecords = useMemo(() => {
+    let sortableItems = [...SAMPLE_RECORDS]
+    if (searchRec) {
+      sortableItems = sortableItems.filter(r =>
+        r.disease.toLowerCase().includes(searchRec.toLowerCase()) ||
+        r.crop.toLowerCase().includes(searchRec.toLowerCase()) ||
+        (r.treatment && r.treatment.toLowerCase().includes(searchRec.toLowerCase()))
+      )
+    }
+    if (sortConfig !== null) {
+      sortableItems.sort((a, b) => {
+        let valA = a[sortConfig.key]
+        let valB = b[sortConfig.key]
+        if (sortConfig.key === 'severity') {
+           const sMap = { 'High': 3, 'Medium': 2, 'Low': 1, 'None': 0 }
+           valA = sMap[valA] || 0
+           valB = sMap[valB] || 0
+        }
+        if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1
+        if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1
+        return 0
+      })
+    }
+    return sortableItems
+  }, [searchRec, sortConfig])
+
+  const requestSort = (key) => {
+    let direction = 'asc'
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc'
+    }
+    setSortConfig({ key, direction })
+  }
+
+  const SortIcon = ({ col }) => {
+    if (sortConfig.key !== col) return <span style={{ opacity: 0.3 }}><FiChevronDown /></span>
+    return sortConfig.direction === 'asc' ? <FiChevronUp /> : <FiChevronDown />
+  }
 
   return (
     <section id="dashboard" className="section-pad">
@@ -49,11 +86,10 @@ export default function Dashboard() {
         <motion.div className="section-header"
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: .6 }}>
-          <span className="section-tag">📊 Analytics Dashboard</span>
-          <h2 className="section-title">Farm Intelligence Overview</h2>
+          <span className="section-tag">{t('dashboard.pageTitle', '📊 Analytics Dashboard')}</span>
+          <h2 className="section-title">{t('dashboard.pageTitle', 'Farm Intelligence Overview')}</h2>
           <p className="section-desc">
-            AI-generated analytics synthesizing detection history, disease trends,
-            and actionable insights across all monitoring sessions.
+            {t('dashboard.recentActivity', 'AI-generated analytics synthesizing detection history, disease trends, and actionable insights across all monitoring sessions.')}
           </p>
         </motion.div>
 
@@ -66,7 +102,7 @@ export default function Dashboard() {
               <div className="dash-stat-icon" style={{ background: s.color + '18' }}>{s.icon}</div>
               <div>
                 <div className="dash-stat-val" style={{ color: s.color }}>{s.value}</div>
-                <div className="dash-stat-label">{s.label}</div>
+                <div className="dash-stat-label">{t(s.key, s.label)}</div>
               </div>
             </motion.div>
           ))}
@@ -74,12 +110,31 @@ export default function Dashboard() {
 
         {/* Charts Row */}
         <div className="dash-charts-row">
-          {/* Bar Chart */}
+          {/* Line Chart: Disease Count Trends */}
           <motion.div className="glass-card dash-chart-card"
             initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }} transition={{ duration: .6 }}>
             <div className="dash-chart-head">
-              <h3 className="dash-chart-title"><FiTrendingUp style={{ color: 'var(--green-400)' }} /> Monthly Disease Trends</h3>
+              <h3 className="dash-chart-title"><FiTrendingUp style={{ color: 'var(--green-400)' }} /> Seasonal Disease Trends</h3>
+            </div>
+            <ResponsiveContainer width="100%" height={240}>
+              <LineChart data={MONTHLY_CHART_DATA} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(52,211,153,.06)" />
+                <XAxis dataKey="month" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 11, color: 'var(--text-muted)' }} />
+                <Line type="monotone" dataKey="totalCases" name="Total Cases" stroke="var(--blue-400)" strokeWidth={3} dot={{ fill: 'var(--blue-400)', r: 4 }} activeDot={{ r: 6 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </motion.div>
+
+          {/* Bar Chart: Severity Levels */}
+          <motion.div className="glass-card dash-chart-card"
+            initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }} transition={{ duration: .6, delay: 0.1 }}>
+            <div className="dash-chart-head">
+              <h3 className="dash-chart-title">📊 Average Severity Level</h3>
             </div>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={MONTHLY_CHART_DATA} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
@@ -88,11 +143,7 @@ export default function Dashboard() {
                 <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 11, color: 'var(--text-muted)' }} />
-                <Bar dataKey="earlyBlight"    name="Early Blight"    fill="#f59e0b" radius={[3,3,0,0]} />
-                <Bar dataKey="lateBlight"     name="Late Blight"     fill="#ef4444" radius={[3,3,0,0]} />
-                <Bar dataKey="powderyMildew"  name="Powdery Mildew"  fill="#8b5cf6" radius={[3,3,0,0]} />
-                <Bar dataKey="leafSpot"       name="Leaf Spot"       fill="#6366f1" radius={[3,3,0,0]} />
-                <Bar dataKey="healthy"        name="Healthy"         fill="#10b981" radius={[3,3,0,0]} />
+                <Bar dataKey="severityScore" name="Severity Score (0-3)" fill="#f59e0b" radius={[3,3,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           </motion.div>
@@ -143,8 +194,13 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* History Table */}
-        <motion.div className="glass-card dash-table-card"
+        {/* Advisory Panel Render */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: .6 }}>
+          <AdvisoryPanel />
+        </motion.div>
+
+        {/* Historical Data Tracking UI */}
+        <motion.div className="glass-card dash-table-card" style={{ marginTop: 24 }}
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: .6, delay: .1 }}>
           <div className="dash-table-head">
@@ -161,28 +217,23 @@ export default function Dashboard() {
             <table className="dash-table">
               <thead>
                 <tr>
-                  {['Date','Farmer','Crop','Disease','Confidence','Severity','Status'].map(h => (
-                    <th key={h}>{h}</th>
-                  ))}
+                  <th onClick={() => requestSort('date')} style={{cursor:'pointer'}}>Date <SortIcon col="date" /></th>
+                  <th onClick={() => requestSort('crop')} style={{cursor:'pointer'}}>Crop Type <SortIcon col="crop" /></th>
+                  <th onClick={() => requestSort('disease')} style={{cursor:'pointer'}}>Disease <SortIcon col="disease" /></th>
+                  <th onClick={() => requestSort('severity')} style={{cursor:'pointer'}}>Severity <SortIcon col="severity" /></th>
+                  <th onClick={() => requestSort('treatment')} style={{cursor:'pointer'}}>Treatment <SortIcon col="treatment" /></th>
+                  <th onClick={() => requestSort('weather')} style={{cursor:'pointer'}}>Weather <SortIcon col="weather" /></th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRecords.map((r, i) => (
                   <tr key={i}>
                     <td>{r.date}</td>
-                    <td>{r.farmer}</td>
                     <td>{r.crop}</td>
                     <td style={{ fontWeight: 600 }}>{r.disease}</td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 50, height: 4, background: 'var(--bg-tertiary)', borderRadius: 2, overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${r.confidence}%`, background: 'var(--green-400)', borderRadius: 2 }} />
-                        </div>
-                        <span style={{ fontSize: '.75rem', color: 'var(--green-400)', fontWeight: 700 }}>{r.confidence}%</span>
-                      </div>
-                    </td>
                     <td><span className={`tag ${r.severity === 'High' ? 'tag-red' : r.severity === 'Medium' ? 'tag-amber' : r.severity === 'Low' ? 'tag-cyan' : 'tag-green'}`}>{r.severity}</span></td>
-                    <td><span className={`tag ${STATUS_TAG[r.status] || 'tag-cyan'}`}>{r.status}</span></td>
+                    <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{r.treatment}</td>
+                    <td style={{ fontSize: '0.8rem' }}>{r.weather}</td>
                   </tr>
                 ))}
               </tbody>
@@ -197,8 +248,8 @@ export default function Dashboard() {
         .dash-stat-icon { width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
         .dash-stat-val { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; line-height: 1; }
         .dash-stat-label { font-size: .75rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
-        .dash-charts-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .dash-chart-card { padding: 24px; }
+        .dash-charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .dash-chart-card { padding: 24px; min-width: 0; }
         .dash-chart-head { margin-bottom: 16px; }
         .dash-chart-title { font-family: var(--font-display); font-size: .95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .donut-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; }
@@ -217,7 +268,8 @@ export default function Dashboard() {
         .dash-table-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
         .dash-table-wrap { overflow-x: auto; }
         .dash-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-        .dash-table th { text-align: left; padding: 10px 12px; color: var(--text-muted); font-weight: 600; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+        .dash-table th { text-align: left; padding: 10px 12px; color: var(--text-muted); font-weight: 600; font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border-color); white-space: nowrap; user-select: none; }
+        .dash-table th:hover { background: rgba(255,255,255,0.02); }
         .dash-table td { padding: 12px 12px; color: var(--text-secondary); border-bottom: 1px solid rgba(52,211,153,.04); white-space: nowrap; }
         .dash-table tr:hover td { background: rgba(16,185,129,.03); }
         @media(max-width:1000px) { .dash-charts-row { grid-template-columns: 1fr; } .dash-stats { grid-template-columns: repeat(2,1fr); } }

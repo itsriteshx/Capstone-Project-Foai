@@ -3,38 +3,55 @@ import { motion } from 'framer-motion'
 import { FiThermometer, FiDroplet, FiCloudRain, FiAlertTriangle } from 'react-icons/fi'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts'
 import { calculateDiseaseRisks } from '../data/diseaseData'
-
-const RISK_LEVEL = (v) => {
-  if (v >= 75) return { label: 'Critical', color: 'var(--red-400)', tag: 'tag-red' }
-  if (v >= 55) return { label: 'High',     color: 'var(--amber-400)', tag: 'tag-amber' }
-  if (v >= 35) return { label: 'Moderate', color: 'var(--cyan-400)', tag: 'tag-cyan' }
-  return               { label: 'Low',     color: 'var(--green-400)', tag: 'tag-green' }
-}
-
-const PRESETS = [
-  { label: '🌧️ Monsoon',    temp: 22, humidity: 88, rainfall: 120 },
-  { label: '☀️ Dry Summer', temp: 36, humidity: 35, rainfall: 8  },
-  { label: '🌤️ Spring',     temp: 24, humidity: 62, rainfall: 45 },
-  { label: '❄️ Winter',     temp: 12, humidity: 70, rainfall: 30 },
-]
+import { useTranslation } from 'react-i18next'
 
 export default function WeatherPredictor() {
+  const { t } = useTranslation()
+
+  const RISK_LEVEL = (v) => {
+    if (v >= 75) return { label: t('weather.r2', 'Critical'), color: 'var(--red-400)', tag: 'tag-red' }
+    if (v >= 55) return { label: t('weather.r1', 'High'),     color: 'var(--amber-400)', tag: 'tag-amber' }
+    if (v >= 35) return { label: t('weather.r3', 'Moderate'), color: 'var(--cyan-400)', tag: 'tag-cyan' }
+    return               { label: t('weather.r4', 'Low'),     color: 'var(--green-400)', tag: 'tag-green' }
+  }
+
+  const PRESETS = [
+    { labelKey: 'weather.p1', label: '🌧️ Monsoon',    temp: 22, humidity: 88, rainfall: 120 },
+    { labelKey: 'weather.p2', label: '☀️ Dry Summer', temp: 36, humidity: 35, rainfall: 8  },
+    { labelKey: 'weather.p3', label: '🌤️ Spring',     temp: 24, humidity: 62, rainfall: 45 },
+    { labelKey: 'weather.p4', label: '❄️ Winter',     temp: 12, humidity: 70, rainfall: 30 },
+  ]
+
   const [temp, setTemp]         = useState(24)
   const [humidity, setHumidity] = useState(65)
   const [rainfall, setRainfall] = useState(60)
 
   const risks = calculateDiseaseRisks(temp, humidity, rainfall)
+  
+  const isHighRiskOutbreak = humidity > 80 && temp >= 24 && temp <= 30;
+  
   const overallRisk = Math.round(risks.reduce((a, r) => a + r.risk, 0) / risks.length)
+  const finalRiskDisplay = isHighRiskOutbreak ? Math.max(overallRisk, 85) : overallRisk;
 
-  const radarData = risks.map(r => ({ subject: r.name.split(' / ')[0], risk: r.risk }))
+  // Disease mapping for radar chart labels
+  const getTranslatedDisease = (name) => {
+    if (name.includes('Early Blight')) return t('weather.d1');
+    if (name.includes('Late Blight')) return t('weather.d2');
+    if (name.includes('Powdery Mildew')) return t('weather.d3');
+    if (name.includes('Bacterial Spot')) return t('weather.d4');
+    if (name.includes('Viral')) return t('weather.d5');
+    return name;
+  }
+
+  const radarData = risks.map(r => ({ subject: getTranslatedDisease(r.name), risk: r.risk }))
 
   const applyPreset = (p) => { setTemp(p.temp); setHumidity(p.humidity); setRainfall(p.rainfall) }
 
-  const Slider = ({ label, icon, value, setValue, min, max, unit, color }) => (
+  const Slider = ({ tKey, icon, value, setValue, min, max, unit, color }) => (
     <div className="wp-slider-item">
       <div className="wp-slider-label">
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ color }}>{icon}</span> {label}
+          <span style={{ color }}>{icon}</span> {t(tKey)}
         </span>
         <span className="wp-slider-val" style={{ color }}>{value}{unit}</span>
       </div>
@@ -55,78 +72,78 @@ export default function WeatherPredictor() {
         <motion.div className="section-header"
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: .6 }}>
-          <span className="section-tag">🌦️ Probabilistic Reasoning</span>
-          <h2 className="section-title">Weather-Based Disease Risk Predictor</h2>
+          <span className="section-tag">🌦️ {t('features.weatherRisk')}</span>
+          <h2 className="section-title">{t('weather.title')}</h2>
           <p className="section-desc">
-            Adjust temperature, humidity, and rainfall to see how Bayesian probability
-            scoring predicts disease outbreak risk in real time.
+            {t('weather.subtitle')}
           </p>
         </motion.div>
 
         <div className="wp-grid">
-          {/* Controls */}
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }} transition={{ duration: .6 }}>
-            {/* Presets */}
-            <p style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 10 }}>QUICK PRESETS</p>
+            <p style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 10 }}>{t('weather.presets')}</p>
             <div className="wp-presets">
               {PRESETS.map(p => (
-                <button key={p.label} className="wp-preset-btn" onClick={() => applyPreset(p)}>{p.label}</button>
+                <button key={p.labelKey} className="wp-preset-btn" onClick={() => applyPreset(p)}>{t(p.labelKey)}</button>
               ))}
             </div>
 
             <div className="wp-sliders glass-card">
-              <h3 className="wp-sliders-title">🌡️ Weather Parameters</h3>
-              <Slider label="Temperature" icon={<FiThermometer />} value={temp} setValue={setTemp} min={5} max={45} unit="°C" color="var(--amber-400)" />
-              <Slider label="Humidity"    icon={<FiDroplet />}     value={humidity} setValue={setHumidity} min={10} max={100} unit="%" color="var(--cyan-400)" />
-              <Slider label="Rainfall"    icon={<FiCloudRain />}   value={rainfall} setValue={setRainfall} min={0} max={200} unit="mm" color="var(--purple-400)" />
+              <h3 className="wp-sliders-title">🌡️ {t('weather.params')}</h3>
+              <Slider tKey="weather.temp" icon={<FiThermometer />} value={temp} setValue={setTemp} min={5} max={45} unit="°C" color="var(--amber-400)" />
+              <Slider tKey="weather.humidity" icon={<FiDroplet />}     value={humidity} setValue={setHumidity} min={10} max={100} unit="%" color="var(--cyan-400)" />
+              <Slider tKey="weather.rainfall" icon={<FiCloudRain />}   value={rainfall} setValue={setRainfall} min={0} max={200} unit="mm" color="var(--purple-400)" />
             </div>
 
-            {/* Overall risk gauge */}
             <div className="wp-gauge glass-card">
               <div className="wp-gauge-inner">
-                <div className="wp-gauge-ring" style={{ '--risk': overallRisk }}>
+                <div className="wp-gauge-ring" style={{ '--risk': finalRiskDisplay }}>
                   <div className="wp-gauge-num">
-                    <span className="wp-gauge-val" style={{ color: RISK_LEVEL(overallRisk).color }}>{overallRisk}%</span>
-                    <span className="wp-gauge-sub">Overall Risk</span>
+                    <span className="wp-gauge-val" style={{ color: RISK_LEVEL(finalRiskDisplay).color }}>{finalRiskDisplay}%</span>
+                    <span className="wp-gauge-sub">{t('weather.outbreakRisk')}</span>
                   </div>
                 </div>
                 <div>
-                  <span className={`tag ${RISK_LEVEL(overallRisk).tag}`} style={{ fontSize: '.85rem', padding: '6px 18px' }}>
-                    {RISK_LEVEL(overallRisk).label} Risk
+                  <span className={`tag ${RISK_LEVEL(finalRiskDisplay).tag}`} style={{ fontSize: '.85rem', padding: '6px 18px' }}>
+                    {RISK_LEVEL(finalRiskDisplay).label} {t('weather.outbreakRisk')}
                   </span>
-                  <p style={{ fontSize: '.78rem', color: 'var(--text-muted)', marginTop: 8 }}>Based on 3 environmental factors</p>
+                  {isHighRiskOutbreak ? (
+                    <p style={{ fontSize: '.78rem', color: 'var(--red-400)', marginTop: 8, fontWeight: 700 }}>
+                      ⚠️ {t('weather.highRisk')}
+                    </p>
+                  ) : (
+                    <p style={{ fontSize: '.78rem', color: 'var(--text-muted)', marginTop: 8 }}>
+                      {t('weather.basedOn')}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Results */}
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }} transition={{ duration: .6, delay: .15 }}>
-
-            {/* Radar Chart */}
             <div className="glass-card wp-radar-card">
-              <h3 className="wp-section-head">Disease Risk Radar</h3>
+              <h3 className="wp-section-head">{t('weather.riskRadar')}</h3>
               <ResponsiveContainer width="100%" height={220}>
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="rgba(52,211,153,.1)" />
                   <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
                   <Radar dataKey="risk" stroke="var(--green-400)" fill="var(--green-400)" fillOpacity={0.18} strokeWidth={2} dot={{ fill: 'var(--green-400)', r: 4 }} />
-                  <Tooltip contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 8, color: 'var(--text-primary)' }} formatter={(v) => [`${v}%`, 'Risk']} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 8, color: 'var(--text-primary)' }} formatter={(v) => [`${v}%`, t('weather.outbreakRisk')]} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Risk bars */}
             <div className="wp-risk-list glass-card">
-              <h3 className="wp-section-head">Individual Disease Risks</h3>
+              <h3 className="wp-section-head">{t('weather.outbreakRisk')}</h3>
               {risks.map(r => {
                 const lvl = RISK_LEVEL(r.risk)
                 return (
                   <div key={r.name} className="wp-risk-item">
                     <div className="wp-risk-top">
-                      <span className="wp-risk-name">{r.icon} {r.name}</span>
+                      <span className="wp-risk-name">{r.icon} {getTranslatedDisease(r.name)}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span className={`tag ${lvl.tag}`}>{lvl.label}</span>
                         <span style={{ fontSize: '.82rem', fontWeight: 700, color: lvl.color, minWidth: 38, textAlign: 'right' }}>{r.risk}%</span>
@@ -142,7 +159,7 @@ export default function WeatherPredictor() {
                       <div className="wp-risk-alert">
                         <FiAlertTriangle size={12} style={{ color: lvl.color }} />
                         <span style={{ color: lvl.color }}>
-                          {r.risk >= 75 ? 'Immediate preventive action recommended!' : 'Monitor conditions closely — act within 48h'}
+                          {r.risk >= 75 ? t('weather.msg2') : t('weather.msg1')}
                         </span>
                       </div>
                     )}
@@ -153,17 +170,16 @@ export default function WeatherPredictor() {
           </motion.div>
         </div>
 
-        {/* Bayesian explanation */}
         <motion.div className="wp-explain glass-card"
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: .6, delay: .2 }}>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', marginBottom: 16 }}>🧮 Bayesian Probabilistic Model</h3>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', marginBottom: 16 }}>🧮 {t('weather.bayesian')}</h3>
           <div className="wp-explain-grid">
             {[
-              { label: 'P(Disease | Humidity)', formula: 'H > 80% → +35 points', color: 'var(--cyan-400)' },
-              { label: 'P(Disease | Temperature)', formula: '15–25°C → +30 points', color: 'var(--amber-400)' },
-              { label: 'P(Disease | Rainfall)', formula: '> 100mm → +25 points', color: 'var(--purple-400)' },
-              { label: 'Final Risk Score', formula: 'Sum(factors) + Base → min(100)', color: 'var(--green-400)' },
+              { label: `P(${t('weather.d2')} | ${t('weather.humidity')})`, formula: 'H > 80% → +35 points', color: 'var(--cyan-400)' },
+              { label: `P(${t('weather.d2')} | ${t('weather.temp')})`, formula: '15–25°C → +30 points', color: 'var(--amber-400)' },
+              { label: `P(${t('weather.d2')} | ${t('weather.rainfall')})`, formula: '> 100mm → +25 points', color: 'var(--purple-400)' },
+              { label: t('dashboard.recentActivity', 'Final Risk Score'), formula: 'Sum(factors) + Base → min(100)', color: 'var(--green-400)' },
             ].map(b => (
               <div key={b.label} className="wp-bayes-item" style={{ borderColor: b.color + '30' }}>
                 <p style={{ fontSize: '.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{b.label}</p>
