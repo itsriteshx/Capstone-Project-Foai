@@ -55,7 +55,7 @@ async function getAIResponse(userMessage, langCode) {
   const langName = langNames[langCode] || 'Hindi';
 
   try {
-    const response = await fetch('/api/groq/openai/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
