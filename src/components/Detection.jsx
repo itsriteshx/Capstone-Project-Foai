@@ -66,44 +66,66 @@ export default function Detection() {
 
   const formatKey = (className) => className.toLowerCase().replace(/[\s-]/g, '_')
 
+  const triggerWebhook = async (data) => {
+    try {
+      const date = new Date().toISOString().split('T')[0];
+      const crop = data.crop;
+      const severity = data.severity;
+      const disease = data.name || data.disease;
+      const weather = 'Moderate';
+      const treatment = Array.isArray(data.treatment) ? data.treatment.join(', ') : data.treatment;
+
+      const formData = new URLSearchParams();
+      formData.append('date', date);
+      formData.append('crop', crop);
+      formData.append('severity', severity);
+      formData.append('disease', disease);
+      formData.append('weather', weather);
+      formData.append('treatment', treatment);
+
+      await fetch('https://heave-ambiguous-unrigged.ngrok-free.dev/webhook/cropguard-log', {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
+      });
+      console.log('Webhook triggered successfully');
+    } catch (err) {
+      console.error('Webhook failed:', err);
+    }
+  };
+
   const runAnalysis = async (mockKey) => {
     setAnalysing(true)
     setResult(null)
 
-    // Demo Mode simulates quick detection without full inference overhead
     if (mockKey) {
       setTimeout(() => {
-        setResult({ ...DISEASE_DATABASE[mockKey], key: mockKey, confidence: (92 + Math.random() * 7).toFixed(1) })
+        const finalResult = { ...DISEASE_DATABASE[mockKey], key: mockKey, confidence: (92 + Math.random() * 7).toFixed(1) };
+        setResult(finalResult)
         setActiveTab('symptoms')
         setAnalysing(false)
+        triggerWebhook(finalResult)
       }, 2200)
       return
     }
 
-    // Real TFJS Inference using the imported Teachable Machine parameters
     if (model && imageRef.current) {
       try {
-        // Aesthetic wait brief for animation satisfaction
         await new Promise(r => setTimeout(r, 1200))
-        
         const predictions = await model.predict(imageRef.current)
         const top = predictions.sort((a,b) => b.probability - a.probability)[0]
-        
         const key = formatKey(top.className)
         let dbData = DISEASE_DATABASE[key]
-        
-        // Fallback gracefully if Teachable Machine string lacks exact match mapping
-        if (!dbData) {
-          console.warn(`Unmatched class: ${top.className}. Defaulting metadata handler.`)
-          dbData = DISEASE_DATABASE['early_blight'] 
-        }
+        if (!dbData) dbData = DISEASE_DATABASE['early_blight']
 
-        setResult({ 
+        const finalResult = { 
           ...dbData, 
           key,
           name: top.className, 
           confidence: (top.probability * 100).toFixed(1) 
-        })
+        };
+        setResult(finalResult)
+        triggerWebhook(finalResult)
       } catch (err) {
         console.error("Inference Error", err)
       }
