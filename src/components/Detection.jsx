@@ -50,7 +50,7 @@ export default function Detection() {
   useEffect(() => {
     async function loadModel() {
       try {
-        const URL = '/model/'
+        const URL = `${import.meta.env.BASE_URL}model/`
         const modelURL = URL + 'model.json'
         const metadataURL = URL + 'metadata.json'
         const loadedModel = await tmImage.load(modelURL, metadataURL)
